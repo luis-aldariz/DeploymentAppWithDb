@@ -23,7 +23,7 @@ jobs:
 
       - name: Restore Dependencies
         run: dotnet restore
-          
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
@@ -31,7 +31,7 @@ jobs:
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
@@ -48,7 +48,7 @@ jobs:
         with:
           name: ddl-updates
           path: ${{env.DOTNET_ROOT}}/sql/sql-script.sql
-          
+
   deploy:
     runs-on: windows-latest
     needs: build
@@ -60,18 +60,18 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
       
       - name: Login to Azure
-        uses: azure/login@v2
+        uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_4606E260E17B46819B964E1B65668C61 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_2169FB42F3BF40F6BB16356B99AACD76 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_FC064FE8F4124B9A9AC9CFC850E774F0 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0DDE9625705E4EF3B6E3125A14766D37 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_3EA629C5E73A44759D3B9FDEE0848AD9 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_215C41A8F3B341DA8C99DE517E0AD168 }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@v2
         with:
           app-name: 'appsvcnmdb'
           slot-name: 'Production'
@@ -84,4 +84,3 @@ jobs:
           connection-string: ${{ secrets.SQL_CONNECTION_STRING }}
           # Path to the file used for this action. Supported file types are .sql, .dacpac, or .sqlproj.
           path: ./ddl-updates/sql-script.sql    
-          
