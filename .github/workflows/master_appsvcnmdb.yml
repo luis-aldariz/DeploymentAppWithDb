@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '8.0.x'
 
@@ -38,15 +38,17 @@ jobs:
 
       - name: Install EntityFrameworkCore Tools
         run: |
-              dotnet new tool-manifest
-              dotnet tool install dotnet-ef
+            dotnet new tool-manifest
+            dotnet tool install dotnet-ef
+            
       - name: Generate EF Core Migration Script
         run: dotnet ef migrations script --idempotent --no-build --configuration Release --output ${{env.DOTNET_ROOT}}/sql/sql-script.sql --context DeploymentAppWithDb.Data.ProjectContext --project ${{ github.workspace }}/DeploymentAppWithDb/DeploymentAppWithDb.csproj
-
-      - name: actions/upload-artifact@v3
+      
+      - uses: actions/upload-artifact@v3
         with:
-            name: ddl-updates
-            path: ${{env.DOTNET_ROOT}}/sql/sql-script.sql
+          name: ddl-updates
+          path: ${{env.DOTNET_ROOT}}/sql/sql-script.sql
+          
   deploy:
     runs-on: windows-latest
     needs: build
